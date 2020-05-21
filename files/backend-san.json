@@ -1,0 +1,14 @@
+{
+    "version": 1,
+    "storageDriverName": "ontap-san",
+    "backendName": "BackendForSAN",
+    "managementLIF": "10.67.217.5",
+    "dataLIF": "10.67.217.7",
+    "svm": "SVM_Lab",
+    "username": "openshift",
+    "password": "N3tApp00",
+     "limitVolumeSize": "50Gi",
+      "defaults": {
+          "spaceReserve": "none",
+                   }
+ }
