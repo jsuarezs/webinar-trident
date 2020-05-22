@@ -1,0 +1,14 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc-rwo
+  annotations:
+     trident.netapp.io/reclaimPolicy: "Delete"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: san
+  resources:
+    requests:
+      storage: 1Gi
+
