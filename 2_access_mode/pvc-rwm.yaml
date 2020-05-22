@@ -1,0 +1,15 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc-rwm
+  annotations:
+     trident.netapp.io/snapshotPolicy: "default"
+     trident.netapp.io/snapshotDirectory: "true"
+     trident.netapp.io/reclaimPolicy: "Retain"
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: nas
+  resources:
+    requests:
+      storage: 1Gi
