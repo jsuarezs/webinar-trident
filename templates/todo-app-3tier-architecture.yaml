@@ -1,0 +1,281 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+labels:
+  template: todo-app-3tier-architecture
+message: |-
+  The following service(s) have been created in your project: ${NAME}.
+  For more information about using this template, including OpenShift considerations,
+  see https://github.com/netappspain/webinar-trident/blob/master/templates/todo-app-3tier-architecture.yaml.
+metadata:
+  name: todo-app-3tier-architecture
+  annotations:
+    tags: todo-app-3tier-architecture
+    description: A simple To-Do app based on a 3-tier architecture using persistent data. For more information about using this template, including OpenShift considerations,
+      see https://github.com/netappspain/webinar-trident/blob/master/templates/todo-app-3tier-architecture.yaml.
+    iconClass: icon-linux
+    openshift.io/display-name:  To-Do app based on a 3-tier architecture
+    openshift.io/documentation-url: https://github.com/netappspain/webinar-trident/blob/master/templates/todo-app-3tier-architecture.yaml
+    openshift.io/long-description: This template defines resources needed to develop
+      a simple To-Do app based on a 3-tier architecture using persistent data.
+    openshift.io/provider-display-name: Pablo Garcia Arevalo
+objects:
+
+# Objects for the web tier
+
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    labels:
+      app: ${NAME}-web
+    name: ${NAME}
+    namespace: ${NAMESPACE}
+  spec:
+    port:
+      targetPort: 8080-tcp
+    to:
+      kind: Service
+      name: ${NAME}
+      weight: 100
+
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: ${NAME}-web
+    name: ${NAME}-web
+    namespace: ${NAMESPACE}
+  spec:
+    ports:
+    - name: 8080-tcp
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    - name: 8888-tcp
+      port: 8888
+      protocol: TCP
+      targetPort: 8888
+    selector:
+      app: ${NAME}-web
+      deploymentconfig: ${NAME}-web
+    sessionAffinity: None
+    type: ClusterIP
+
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    name: ${PVC_NAME}-web
+    namespace: ${NAMESPACE}
+  spec:
+    accessModes:
+      - ReadWriteMany
+    storageClassName: ${STORAGECLASS_RWM_NAME}
+    resources:
+      requests:
+        storage: 1Gi
+
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      alpha.image.policy.openshift.io/resolve-names: '*'
+      deployment.kubernetes.io/revision: "2"
+      image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"hello-world-persistent-data:latest","namespace":"1-test"},"fieldPath":"spec.template.spec.containers[?(@.name==\"hello-world-persistent-data\")].image"}]'
+    labels:
+      app: ${NAME}-web
+    name: ${NAME}-web
+    namespace: ${NAMESPACE}
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: ${NAME}-web
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        labels:
+          app: ${NAME}-web
+          deploymentconfig: ${NAME}-web
+      spec:
+        containers:
+        - image: pablogarciaarevalo/hello-world-persistent-data:latest
+          imagePullPolicy: Always
+          name: ${NAME}-web
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          - containerPort: 8888
+            protocol: TCP
+          volumeMounts:
+            - name: ${PVC_NAME}-web
+              mountPath: /data
+        volumes:
+        - name: ${PVC_NAME}-web
+          persistentVolumeClaim:
+            claimName: ${PVC_NAME}-web
+
+# Objects for the api tier
+
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: ${NAME}-api
+    name: ${NAME}-api
+    namespace: ${NAMESPACE}
+  spec:
+    ports:
+    - name: 8080-tcp
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    - name: 8888-tcp
+      port: 8888
+      protocol: TCP
+      targetPort: 8888
+    selector:
+      app: ${NAME}-web
+      deploymentconfig: ${NAME}-api
+    sessionAffinity: None
+    type: ClusterIP
+
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      alpha.image.policy.openshift.io/resolve-names: '*'
+      deployment.kubernetes.io/revision: "2"
+      image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"hello-world-persistent-data:latest","namespace":"1-test"},"fieldPath":"spec.template.spec.containers[?(@.name==\"hello-world-persistent-data\")].image"}]'
+    labels:
+      app: ${NAME}-api
+    name: ${NAME}-api
+    namespace: ${NAMESPACE}
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: ${NAME}-api
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        labels:
+          app: ${NAME}-api
+          deploymentconfig: ${NAME}-api
+      spec:
+        containers:
+        - image: pablogarciaarevalo/hello-world-persistent-data:latest
+          imagePullPolicy: Always
+          name: ${NAME}-api
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          - containerPort: 8888
+            protocol: TCP
+
+# Objects for the backend tier
+
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: ${NAME}-backend
+    name: ${NAME}-backend
+    namespace: ${NAMESPACE}
+  spec:
+    ports:
+    - name: 8080-tcp
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    - name: 8888-tcp
+      port: 8888
+      protocol: TCP
+      targetPort: 8888
+    selector:
+      app: ${NAME}-backend
+      deploymentconfig: ${NAME}-backend
+    sessionAffinity: None
+    type: ClusterIP
+
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    annotations:
+      alpha.image.policy.openshift.io/resolve-names: '*'
+      deployment.kubernetes.io/revision: "2"
+      image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"hello-world-persistent-data:latest","namespace":"1-test"},"fieldPath":"spec.template.spec.containers[?(@.name==\"hello-world-persistent-data\")].image"}]'
+    labels:
+      app: ${NAME}-backend
+    name: ${NAME}-backend
+    namespace: ${NAMESPACE}
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: ${NAME}-backend
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        labels:
+          app: ${NAME}-backend
+          deploymentconfig: ${NAME}-backend
+      spec:
+        containers:
+        - image: pablogarciaarevalo/hello-world-persistent-data:latest
+          imagePullPolicy: Always
+          name: ${NAME}-backend
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          - containerPort: 8888
+            protocol: TCP
+          volumeMounts:
+            - name: ${PVC_NAME}-backend
+              mountPath: /data
+    volumeClaimTemplates:
+    - metadata:
+        name: ${PVC_NAME}-backend
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 1Gi
+        storageClassName: ${STORAGECLASS_RWO_NAME}
+
+parameters:
+- description: The name assigned to all of the objects defined in this template.
+  displayName: Name
+  name: NAME
+  required: true
+  value: todo-app-3tier-architecture
+- description: The namespace where objects will run.
+  displayName: NAMESPACE
+  name: NAMESPACE
+  required: true
+  value: 2-webinar
+- description: The persistent volume claim prefix that the PODs will create.
+  displayName: PVC_NAME
+  name: PVC_NAME
+  required: true
+  value: pvc-todo
+- description: The Storage Class Name to use for the Read-Write-Many Persistent Volumes in the web tier.
+  displayName: STORAGECLASS_RWM_NAME
+  name: STORAGECLASS_RWM_NAME
+  required: true
+  value: nas
+- description: The Storage Class Name to use for the Read-Write-Once Persistent Volumes in the backend tier.
+  displayName: STORAGECLASS_RWO_NAME
+  name: STORAGECLASS_RWO_NAME
+  required: true
+  value: san

@@ -1,0 +1,14 @@
+{
+    "version": 1,
+    "storageDriverName": "ontap-nas",
+    "backendName": "BackendForNAS",
+    "managementLIF": "172.30.2.39",
+    "dataLIF": "172.30.2.154",
+    "svm": "svm_ontap_aws",
+    "username": "k3s",
+    "password": "N3tApp00",
+     "limitVolumeSize": "50Gi",
+      "defaults": {
+          "spaceReserve": "none",
+                   }
+ }

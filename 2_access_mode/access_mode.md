@@ -3,9 +3,9 @@ Webinar Trident: El orquestador de almacenamiento para contenedores
 
 ## Modos de acceso
 
-A PersistentVolume can be mounted on a host in any way supported by the resource provider. Providers have different capabilities and each PV’s access modes are set to the specific modes supported by that particular volume.
+Un Persistent Volume se puede montar en un host de cualquier forma admitida por el proveedor de recursos. Los proveedores tienen diferentes capacidades y los modos de acceso de cada PV se configuran en los modos específicos admitidos por ese volumen en particular.
 
-Claims are matched to volumes with similar access modes. The only two matching criteria are access modes and size. A claim’s access modes represent a request. 
+Los Persistent Volume Claims se emparejan a los Persistent Volume con modos de acceso similares. Los únicos dos criterios que han de coincidir son el modo de acceso y el tamaño.
 
 | Modo de acceso | Abreviación | Descripción |
 | :-------------: |:-----------:| :-----------|
@@ -13,75 +13,100 @@ Claims are matched to volumes with similar access modes. The only two matching c
 | ReadOnlyMany  | ROW | El volumen puede ser montado como de solo lectura por muchos nodos   |
 | ReadWriteMany | RWM | El volumen puede ser montado como lectura-escritura por muchos nodos |
 
-### Creación de un namespace
-
-```shell
-oc create namespace 2-access-mode
-```
-
 ### Creación de un PVC de tipo Read Write Only
+
+Se crea un PVC de tipo Read Write Only
 
 <img src="images/pvc-rwo-gui.png">
 
-```shell
-oc apply -f pvc-rwo.yaml -n 2-access-mode
-```
-
-```shell
-oc get pvc -n 2-access-mode
-NAME      STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
-pvc-rwo   Bound    pvc-d9de6209-0d6d-4bd0-b216-6438a9a999f4   1Gi        RWO            san            3m14s
-```
 ### Creación de un PVC de tipo Read Write Many
+
+Se crea un PVC de tipo Read Write Many
 
 <img src="images/pvc-rwm-gui.png">
 
-```shell
-oc apply -f pvc-rwm.yaml -n 2-access-mode
-```
-
-```shell
-oc get pvc -n 2-access-mode
-NAME      STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
-pvc-rwm   Bound    pvc-56717527-d465-4316-95bd-0b901d8cbd7a   1Gi        RWX            nas            69s
-pvc-rwo   Bound    pvc-d9de6209-0d6d-4bd0-b216-6438a9a999f4   1Gi        RWO            san            3m14s
-```
-
 ### Volumenes persistentes creados
+
+Se verifican los Persisten Volumes creados.
 
 <img src="images/pvs.png">
 
-```shell
-oc get pv
-NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                   STORAGECLASS   REASON   AGE
-pvc-56717527-d465-4316-95bd-0b901d8cbd7a   1Gi        RWX            Delete           Bound    2-access-mode/pvc-rwm   nas                     2m11s
-pvc-d9de6209-0d6d-4bd0-b216-6438a9a999f4   1Gi        RWO            Delete           Bound    2-access-mode/pvc-rwo   san                     4m15s
-```
-
+Se verifican los volúmenes que Trident ha creado automáticamente en ONTAP.
 
 <img src="images/ontap-volumes.png">
 
+Se verifican la LUN que Trident ha creado automáticamente en ONTAP.
+
 <img src="images/ontap-luns.png">
 
+### Ejecución de aplicaciones (POD en un Deployment) con acceso RWM y con acceso RWO
 
+Desde la parte de Developer de OpenShift Container Platform, se accede a Topology a se selecciona 'From Catalog'.
+
+<img src="images/create_app_from_catalog_1.png">
+
+Se busca la plantilla ya creada por 'hello'.
+
+<img src="images/create_app_from_catalog_2.png">
+
+Se instancia la plantilla.
+
+<img src="images/create_app_from_catalog_3.png">
+
+Se crea una aplicación basada en la planilla hello-world con acceso a un PVC existente de tipo RWM.
+
+<img src="images/create_app_from_catalog_4_rwm.png">
+
+Se repiten los 3 pasos anteriores y se crea una aplicación basada en la planilla hello-world con acceso a un PVC existente de tipo RWO.
+
+<img src="images/create_app_from_catalog_5_rwo.png">
+
+Se observa que se terminan de desplegar las aplicaciones y se accede a la web de cada una de ellas.
+
+<img src="images/create_app_from_catalog_6.png">
+
+Se muestra que el punto de montaje del PVC RWM usado es un NFS.
+
+<img src="images/create_app_from_catalog_7_rwm.png">
+
+Se muestra que el punto de montaje del PVC RWO usado es una LUN.
+
+<img src="images/create_app_from_catalog_8_rwo.png">
+
+Escalar el deployment/replicaset de la aplicación usando el PVC RWM con dos pods 
+
+<img src="images/scale_app_rwm_9.png">
+
+Ejecutar el siguiente comando para ver el balanceo de las peticiones HTTP contra los dos backends.
 ```shell
-clusterlab::> volume show -vserver SVM_Lab -volume *trident*
-Vserver   Volume       Aggregate    State      Type       Size  Available Used%
---------- ------------ ------------ ---------- ---- ---------- ---------- -----
-SVM_Lab   trident_pvc_56717527_d465_4316_95bd_0b901d8cbd7a aggr_nodo02_DATOS online RW 1GB 1023MB  0%
-SVM_Lab   trident_pvc_d9de6209_0d6d_4bd0_b216_6438a9a999f4 aggr_nodo02_DATOS online RW 1GB 1023MB  0%
-2 entries were displayed.
+for i in {1..10}; do curl http://hello-world-persistent-data-rwm-1-webinar.apps.ocp1.demolab.es/; done
 
-clusterlab::> lun show -vserver SVM_Lab
-Vserver   Path                            State   Mapped   Type        Size
---------- ------------------------------- ------- -------- -------- --------
-SVM_Lab   /vol/trident_pvc_d9de6209_0d6d_4bd0_b216_6438a9a999f4/lun0 online mapped linux 1GB
+The pod name is Hostname: hello-world-persistent-data-rwm-78c869458f-mk54f
+The persistent volume used has been mounted on: 10.67.217.6:/trident_pvc_0f5e5adb_805e_49f5_b133_150287da2c00 on /data type nfs (rw,relatime,vers=3,rsize=65536,wsize=65536,namlen=255,hard,proto=tcp,timeo=600,retrans=2,sec=sys,mountaddr=10.67.217.6,mountvers=3,mountport=635,mountproto=udp,local_lock=none,addr=10.67.217.6)
+
+Hello world!
+The pod name is Hostname: hello-world-persistent-data-rwm-78c869458f-pzbj9
+The persistent volume used has been mounted on: 10.67.217.6:/trident_pvc_0f5e5adb_805e_49f5_b133_150287da2c00 on /data type nfs (rw,relatime,vers=3,rsize=65536,wsize=65536,namlen=255,hard,proto=tcp,timeo=600,retrans=2,sec=sys,mountaddr=10.67.217.6,mountvers=3,mountport=635,mountproto=udp,local_lock=none,addr=10.67.217.6)
+
+Hello world!
+The pod name is Hostname: hello-world-persistent-data-rwm-78c869458f-mk54f
+The persistent volume used has been mounted on: 10.67.217.6:/trident_pvc_0f5e5adb_805e_49f5_b133_150287da2c00 on /data type nfs (rw,relatime,vers=3,rsize=65536,wsize=65536,namlen=255,hard,proto=tcp,timeo=600,retrans=2,sec=sys,mountaddr=10.67.217.6,mountvers=3,mountport=635,mountproto=udp,local_lock=none,addr=10.67.217.6)
+
+Hello world!
+The pod name is Hostname: hello-world-persistent-data-rwm-78c869458f-pzbj9
+The persistent volume used has been mounted on: 10.67.217.6:/trident_pvc_0f5e5adb_805e_49f5_b133_150287da2c00 on /data type nfs (rw,relatime,vers=3,rsize=65536,wsize=65536,namlen=255,hard,proto=tcp,timeo=600,retrans=2,sec=sys,mountaddr=10.67.217.6,mountvers=3,mountport=635,mountproto=udp,local_lock=none,addr=10.67.217.6)
+
+Hello world!
+The pod name is Hostname: hello-world-persistent-data-rwm-78c869458f-mk54f
+The persistent volume used has been mounted on: 10.67.217.6:/trident_pvc_0f5e5adb_805e_49f5_b133_150287da2c00 on /data type nfs (rw,relatime,vers=3,rsize=65536,wsize=65536,namlen=255,hard,proto=tcp,timeo=600,retrans=2,sec=sys,mountaddr=10.67.217.6,mountvers=3,mountport=635,mountproto=udp,local_lock=none,addr=10.67.217.6)
+
+Hello world!
+The pod name is Hostname: hello-world-persistent-data-rwm-78c869458f-pzbj9
+The persistent volume used has been mounted on: 10.67.217.6:/trident_pvc_0f5e5adb_805e_49f5_b133_150287da2c00 on /data type nfs (rw,relatime,vers=3,rsize=65536,wsize=65536,namlen=255,hard,proto=tcp,timeo=600,retrans=2,sec=sys,mountaddr=10.67.217.6,mountvers=3,mountport=635,mountproto=udp,local_lock=none,addr=10.67.217.6)
+
+...
+
 ```
 
-
-### Ejecución de un POD con acceso RWO
-
-### Ejecución de un POD con acceso RWM
-
-El siguiente ejemplo muestra la forma de consumir almacenamiento según dos tipos de [controladores de Kubernetes](../3_k8s_controllers/3_k8s_controllers.md).
+El siguiente ejemplo muestra la forma de consumir almacenamiento según dos tipos de [controladores de Kubernetes](../3_k8s_controllers/k8s_controllers.md).
 

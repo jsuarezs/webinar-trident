@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: datalake
+  namespace: 4-webinar
+spec:
+  accessModes:
+  - ReadWriteMany
+  storageClassName: nas
