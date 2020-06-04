@@ -8,7 +8,7 @@ Se muestra una página web legacy [http://legacy-web.demolab.es](http://legacy-w
 <img src="images/legacy_app.png">
 
 ```shell
-tridentctl import volume BackendForNAS website -f pvc-website.yaml -n trident
+tridentctl import volume BackendForNAS website -f 4_volume_import/pvc-website.yaml -n trident
 ```
 
 Se observa que se ha importado el volumen como un Persistent Volume Claim y Persistent Volume manteniendo sus datos y su acceso anterior.

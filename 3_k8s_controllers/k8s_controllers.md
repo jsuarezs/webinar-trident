@@ -55,23 +55,27 @@ Un ejemplo de escalado del frontal web para la capa de presentación creado como
 
 <img src="images/scale_app_1.png">
 
-Se verifica el estado del frontal web.
+Un ejemplo de escalado del frontal web para la capa de presentación creado como un Statefulset.
 
 <img src="images/scale_app_2.png">
 
-Escalar el StatefulSet editando el propio YAML desde el entorno gráfico o con el siguiente comando:
-```shell
-oc scale --replicas=2 statefulset todo-app-3tier-architecture-backend -n 2-webinar
-```
-
-Se verifica los Persistent Volume Claims creados.
+Se edita el fichero YAML pasando las réplicas de 1 a 2.
 
 <img src="images/scale_app_3.png">
 
-Se verifica los Persistent Volumes creados.
+Se verifican el número de PODs en el deployment y el statefulset.
 
 <img src="images/scale_app_4.png">
 
+<img src="images/scale_app_5.png">
+
+Se verifica los Persistent Volume Claims creados.
+
+<img src="images/scale_app_6.png">
+
+Se verifica los Persistent Volumes creados.
+
+<img src="images/scale_app_7.png">
 
 El siguiente ejemplo muestra la funcionalidad [volume import](../4_volume_import/volume_import.md) de Trident.
 

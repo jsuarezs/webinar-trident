@@ -61,8 +61,6 @@ Existen varios tipos de controladores de Kubernetes:
 
 <img src="3_k8s_controllers/images/deployment_vs_statefulset.png">
 
-Pueden seguirse todos los pasos realizados en la demostración empezando por la [configuración inicial](1_setup/setup.md) de la integración.
-
 ### Ejecución de aplicaciones To-Do basada en una arquitectura de 3 capas
 
 En este ejemplo se despliega una sencilla aplicación basada en una arquitectura de 3 capas: frontal web para la capa de presentación, un servicio API para la capa de aplicación y un backend para la capa de datos.
@@ -74,3 +72,5 @@ En este ejemplo se despliega una sencilla aplicación basada en una arquitectura
 [Web del coronavirus](https://www.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6) y [repositorio de github](https://github.com/CSSEGISandData/COVID-19.git)
 
 
+
+Pueden seguirse todos los pasos realizados en la demostración empezando por la [configuración inicial](1_setup/setup.md) de la integración.

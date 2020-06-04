@@ -47,6 +47,10 @@ oc apply -f sc-san.yaml
 oc apply -f sc-nas.yaml
 ```
 
+Verificar las Storage Classes desde OpenShift
+
+<img src="images/storage-class.png">
+
 ### Preparación
 
 #### [Modos de acceso](../2_access_mode/access_mode.md)

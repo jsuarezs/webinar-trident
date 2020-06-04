@@ -6,7 +6,7 @@ Webinar Trident: El orquestador de almacenamiento para contenedores
 [Web del coronavirus](https://www.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6) y [repositorio de github](https://github.com/CSSEGISandData/COVID-19.git)
 
 ```shell
-tridentctl import volume BackendForNAS datalake -f pvc-datalake.yaml -n trident
+tridentctl import volume BackendForNAS datalake -f 5_CSI_Snapshot/pvc-datalake.yaml -n trident
 ```
 
 Se muestran el Persistent Volume y Persistent Volume Claim importado.
@@ -16,9 +16,24 @@ Se muestran el Persistent Volume y Persistent Volume Claim importado.
 <img src="images/pvc_imported.png">
 
 Se crea el snapshot del PV desde OpenShift.
-```shell
-oc apply -f snapshot-datalake.yaml
 
+<img src="images/snapshot_yaml.png">
+
+```shell
+apiVersion: snapshot.storage.k8s.io/v1beta1
+kind: VolumeSnapshot
+metadata:
+ name: snap-datalake
+ namespace: 4-webinar
+spec:
+ volumeSnapshotClassName: csi-snapclass
+ source:
+    persistentVolumeClaimName: datalake
+```
+
+Se puede revisar el estado del snapshot con el cliente oc
+
+```shell
 oc describe volumesnapshot snap-datalake -n 4-webinar
 ```
 
@@ -67,6 +82,6 @@ Accediendo a cada uno de ellos se ve el mismo conjunto de datos.
 
 <img src="images/create_app_for_data10.png">
 
-
+<img src="images/create_app_for_data11.png">
 
 A continuación se muestra un ejemplo de la facilidad de mover servicios a una nube pública usando [Kubernetes en Cloud](../6_K8s_on_cloud/k8s_on_cloud.md)
