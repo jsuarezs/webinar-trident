@@ -5,6 +5,15 @@ Webinar Trident: El orquestador de almacenamiento para contenedores
 
 [Web del coronavirus](https://www.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6) y [repositorio de github](https://github.com/CSSEGISandData/COVID-19.git)
 
+
+Se ha desgarcado los ficheros csv en un repositorio NFS.
+
+```shell
+ls /mnt/datalake/
+```
+
+<img src="images/csv_files.png">
+
 ```shell
 tridentctl import volume BackendForNAS datalake -f 5_CSI_Snapshot/pvc-datalake.yaml -n trident
 ```
