@@ -29,6 +29,10 @@ Instalar trident con el cliente 'tridentctl' sobre el namespace 'trident'
 ./tridentctl install -n trident
 ```
 
+Se puede observar desde OpenShift los PODs que se ejecutan dentro de Deployment y DaemonSet.
+
+<img src="images/trident_running.png">
+
 ### Creación de backends de almacenamiento
 
 Se han definido dos backends de almacenamiento, uno con el driver ontap-san, y otro con el driver ontap-nas.
