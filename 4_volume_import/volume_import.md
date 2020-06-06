@@ -1,7 +1,11 @@
 # Webinar Trident
 Webinar Trident: El orquestador de almacenamiento para contenedores
 
+>  SLIDE 6
+
 ## Volume Import
+
+>  SLIDE 7
 
 Se muestra una página web legacy [http://legacy-web.demolab.es](http://legacy-web.demolab.es) ejecutándose en un servidor convencional teniendo el contenido en un volumen NFS exportado desde un sistema ONTAP.
 

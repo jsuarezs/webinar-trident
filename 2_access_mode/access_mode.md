@@ -1,7 +1,11 @@
 # Webinar Trident
 Webinar Trident: El orquestador de almacenamiento para contenedores
 
+>  SLIDE 1
+
 ## Modos de acceso
+
+>  SLIDE 2
 
 Un Persistent Volume se puede montar en un host de cualquier forma admitida por el proveedor de recursos. Los proveedores tienen diferentes capacidades y los modos de acceso de cada PV se configuran en los modos específicos admitidos por ese volumen en particular.
 
@@ -12,6 +16,8 @@ Los Persistent Volume Claims se emparejan a los Persistent Volume con modos de a
 | ReadWriteOnce | RWO | El volumen puede ser montado como lectura-escritura por un solo nodo |
 | ReadOnlyMany  | ROW | El volumen puede ser montado como de solo lectura por muchos nodos   |
 | ReadWriteMany | RWM | El volumen puede ser montado como lectura-escritura por muchos nodos |
+
+>  SLIDE 3
 
 ### Creación de un PVC de tipo Read Write Only
 
@@ -73,40 +79,6 @@ Se muestra que el punto de montaje del PVC RWO usado es una LUN.
 
 <img src="images/create_app_from_catalog_8_rwo.png">
 
-Escalar el deployment/replicaset de la aplicación usando el PVC RWM con dos pods 
-
-<img src="images/scale_app_rwm_9.png">
-
-Ejecutar el siguiente comando para ver el balanceo de las peticiones HTTP contra los dos backends.
-```shell
-for i in {1..10}; do curl http://hello-world-persistent-data-rwm-1-webinar.apps.ocp1.demolab.es/; done
-
-The pod name is Hostname: hello-world-persistent-data-rwm-78c869458f-mk54f
-The persistent volume used has been mounted on: 10.67.217.6:/trident_pvc_0f5e5adb_805e_49f5_b133_150287da2c00 on /data type nfs (rw,relatime,vers=3,rsize=65536,wsize=65536,namlen=255,hard,proto=tcp,timeo=600,retrans=2,sec=sys,mountaddr=10.67.217.6,mountvers=3,mountport=635,mountproto=udp,local_lock=none,addr=10.67.217.6)
-
-Hello world!
-The pod name is Hostname: hello-world-persistent-data-rwm-78c869458f-pzbj9
-The persistent volume used has been mounted on: 10.67.217.6:/trident_pvc_0f5e5adb_805e_49f5_b133_150287da2c00 on /data type nfs (rw,relatime,vers=3,rsize=65536,wsize=65536,namlen=255,hard,proto=tcp,timeo=600,retrans=2,sec=sys,mountaddr=10.67.217.6,mountvers=3,mountport=635,mountproto=udp,local_lock=none,addr=10.67.217.6)
-
-Hello world!
-The pod name is Hostname: hello-world-persistent-data-rwm-78c869458f-mk54f
-The persistent volume used has been mounted on: 10.67.217.6:/trident_pvc_0f5e5adb_805e_49f5_b133_150287da2c00 on /data type nfs (rw,relatime,vers=3,rsize=65536,wsize=65536,namlen=255,hard,proto=tcp,timeo=600,retrans=2,sec=sys,mountaddr=10.67.217.6,mountvers=3,mountport=635,mountproto=udp,local_lock=none,addr=10.67.217.6)
-
-Hello world!
-The pod name is Hostname: hello-world-persistent-data-rwm-78c869458f-pzbj9
-The persistent volume used has been mounted on: 10.67.217.6:/trident_pvc_0f5e5adb_805e_49f5_b133_150287da2c00 on /data type nfs (rw,relatime,vers=3,rsize=65536,wsize=65536,namlen=255,hard,proto=tcp,timeo=600,retrans=2,sec=sys,mountaddr=10.67.217.6,mountvers=3,mountport=635,mountproto=udp,local_lock=none,addr=10.67.217.6)
-
-Hello world!
-The pod name is Hostname: hello-world-persistent-data-rwm-78c869458f-mk54f
-The persistent volume used has been mounted on: 10.67.217.6:/trident_pvc_0f5e5adb_805e_49f5_b133_150287da2c00 on /data type nfs (rw,relatime,vers=3,rsize=65536,wsize=65536,namlen=255,hard,proto=tcp,timeo=600,retrans=2,sec=sys,mountaddr=10.67.217.6,mountvers=3,mountport=635,mountproto=udp,local_lock=none,addr=10.67.217.6)
-
-Hello world!
-The pod name is Hostname: hello-world-persistent-data-rwm-78c869458f-pzbj9
-The persistent volume used has been mounted on: 10.67.217.6:/trident_pvc_0f5e5adb_805e_49f5_b133_150287da2c00 on /data type nfs (rw,relatime,vers=3,rsize=65536,wsize=65536,namlen=255,hard,proto=tcp,timeo=600,retrans=2,sec=sys,mountaddr=10.67.217.6,mountvers=3,mountport=635,mountproto=udp,local_lock=none,addr=10.67.217.6)
-
-...
-
-```
 
 El siguiente ejemplo muestra la forma de consumir almacenamiento según dos tipos de [controladores de Kubernetes](../3_k8s_controllers/k8s_controllers.md).
 

@@ -3,6 +3,8 @@ Webinar Trident: El orquestador de almacenamiento para contenedores
 
 ## Controladores de Kubernetes
 
+>  SLIDE 4
+
 Existen varios tipos de controladores de Kubernetes:
 - ReplicaSet
 - Deployment
@@ -14,6 +16,8 @@ Los Deployment, inicialmente creados para aplicaciones stateless, se utilizan cu
 <img src="images/deployment_vs_statefulset.png">
 
 ### Ejecución de aplicaciones To-Do basada en una arquitectura de 3 capas
+
+>  SLIDE 5
 
 En este ejemplo se despliega una sencilla aplicación basada en una arquitectura de 3 capas: frontal web para la capa de presentación, un servicio API para la capa de aplicación y un backend para la capa de datos.
 

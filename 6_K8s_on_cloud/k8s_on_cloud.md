@@ -3,6 +3,8 @@ Webinar Trident: El orquestador de almacenamiento para contenedores
 
 ## Kubernetes en Cloud
 
+>  SLIDE 11
+
 Se dispone de una VPC en AWS, con un sistema Cloud Volumes ONTAP, Cloud Manager y una instancia EC2 con Kubernetes.
 
 <img src="images/k8s-on-cloud-1.png">
