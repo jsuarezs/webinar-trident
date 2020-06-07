@@ -92,7 +92,8 @@ docker run --name docker-nginx -p 80:80 -d -v /mnt/website:/usr/share/nginx/html
 
 ```shell
 oc create namespace 4-webinar
-oc apply -f ../templates/data-science-covid.yaml -n 4-webinar
+oc apply -f ../templates/jupyter-covid.yaml -n 4-webinar
+chmod +x ../5_CSI_Snapshot/get-jupyter-token.sh
 ```
 
 Se prepara el datalake desde el jumhopst 10.67.217.190
