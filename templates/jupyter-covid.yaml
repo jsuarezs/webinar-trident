@@ -1,0 +1,112 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: notebook-workspace
+  annotations:
+    openshift.io/display-name: Jupyter Notebook Workspace
+    openshift.io/long-description: Template for deploying Jupyter Notebook images with persistent storage from a snapshot snap-datalake.
+    openshift.io/provider-display-name: Pablo Garcia Arevalo
+    openshift.io/documentation-url: https://github.com/netappspain/webinar-trident/blob/master/templates/jupyter-covid.yaml
+    description: Template for deploying Jupyter Notebook images with persistent storage
+      and webdav filesystem access.
+    iconClass: icon-python
+    tags: python,jupyter
+parameters:
+- name: APPLICATION_NAME
+  value: custom-notebook
+  required: true
+- name: NOTEBOOK_IMAGE
+  value: jupyter/datascience-notebook:latest
+  required: true
+- name: NOTEBOOK_MEMORY
+  value: 512Mi
+  required: true
+objects:
+- kind: Deployment
+  apiVersion: apps/v1
+  metadata:
+    name: "${APPLICATION_NAME}"
+    labels:
+      app: "${APPLICATION_NAME}"
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: "${APPLICATION_NAME}"
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        labels:
+          app: "${APPLICATION_NAME}"
+          lab: jupyter
+      spec:
+        volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: "${APPLICATION_NAME}"
+        containers:
+        - name: notebook
+          image: "${NOTEBOOK_IMAGE}"
+          ports:
+          - containerPort: 8888
+            protocol: TCP
+          resources:
+            limits:
+              memory: 512Mi
+          volumeMounts:
+          - name: data
+            mountPath: "/home/jovyan"
+          env:
+          - name: JUPYTER_ENABLE_LAB
+            value: 'yes'
+        automountServiceAccountToken: false
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    name: ${APPLICATION_NAME}
+  spec:
+    accessModes:
+      - ReadWriteMany
+    resources:
+      requests:
+        storage: 100Ti
+    storageClassName: nas
+    dataSource:
+      name: snap-datalake
+      kind: VolumeSnapshot
+      apiGroup: snapshot.storage.k8s.io
+- kind: Service
+  apiVersion: v1
+  metadata:
+    name: "${APPLICATION_NAME}"
+    labels:
+      app: "${APPLICATION_NAME}"
+  spec:
+    ports:
+    - name: 8888-tcp
+      protocol: TCP
+      port: 8888
+      targetPort: 8888
+    selector:
+      app: "${APPLICATION_NAME}"
+- kind: Route
+  apiVersion: route.openshift.io/v1
+  metadata:
+    name: "${APPLICATION_NAME}"
+    labels:
+      app: "${APPLICATION_NAME}"
+  spec:
+    host: ''
+    to:
+      kind: Service
+      name: "${APPLICATION_NAME}"
+      weight: 100
+    port:
+      targetPort: 8888-tcp
+    tls:
+      termination: edge
+      insecureEdgeTerminationPolicy: Redirect

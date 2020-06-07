@@ -87,16 +87,14 @@ Se pueden ver los tres diferentes servicios.
 
 Accediendo a cada uno de ellos se ve el mismo conjunto de datos.
 
-[http://data-science-jaime-4-webinar.apps.ocp1.demolab.es/](http://data-science-jaime-4-webinar.apps.ocp1.demolab.es/)
-
-[http://data-science-manel-4-webinar.apps.ocp1.demolab.es/](http://data-science-manel-4-webinar.apps.ocp1.demolab.es/)
-
-[http://data-science-pablo-4-webinar.apps.ocp1.demolab.es/](http://data-science-pablo-4-webinar.apps.ocp1.demolab.es/)
-
 <img src="images/create_app_for_data9.png">
 
 <img src="images/create_app_for_data10.png">
 
 <img src="images/create_app_for_data11.png">
+
+```shell
+./5_CSI_Snapshot/get-jupyter-token.sh
+```
 
 A continuación se muestra un ejemplo de la facilidad de mover servicios a una nube pública usando [Kubernetes en Cloud](../6_K8s_on_cloud/k8s_on_cloud.md)
