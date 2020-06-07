@@ -93,7 +93,7 @@ docker run --name docker-nginx -p 80:80 -d -v /mnt/website:/usr/share/nginx/html
 ```shell
 oc create namespace 4-webinar
 oc apply -f ../templates/jupyter-covid.yaml -n 4-webinar
-chmod +x ../5_CSI_Snapshot/get-jupyter-token.sh
+chmod +x ../5_CSI_Snapshot/get-jupyter-tokens.sh
 ```
 
 Se prepara el datalake desde el jumhopst 10.67.217.190
@@ -102,7 +102,6 @@ mkdir -p /mnt/datalake
 mount -t nfs 10.67.217.6:datalake /mnt/datalake
 git clone https://github.com/CSSEGISandData/COVID-19.git
 cp COVID-19/csse_covid_19_data/csse_covid_19_daily_reports/*.csv /mnt/datalake/
-tree -H '.' -L 1 --noreport --charset utf-8 > /mnt/datalake/index.html
 ```
 
 Se crea la clase de snapshots:
