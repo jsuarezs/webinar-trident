@@ -89,12 +89,5 @@ Accediendo a cada uno de ellos se ve el mismo conjunto de datos.
 
 <img src="images/create_app_for_data9.png">
 
-<img src="images/create_app_for_data10.png">
-
-<img src="images/create_app_for_data11.png">
-
-```shell
-./5_CSI_Snapshot/get-jupyter-tokens.sh
-```
 
 A continuación se muestra un ejemplo de la facilidad de mover servicios a una nube pública usando [Kubernetes en Cloud](../6_K8s_on_cloud/k8s_on_cloud.md)

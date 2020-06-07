@@ -54,6 +54,8 @@ objects:
           ports:
           - containerPort: 8888
             protocol: TCP
+          command: ["start-notebook.sh"]
+          args: ["--NotebookApp.token=''"]          
           resources:
             limits:
               memory: 512Mi
