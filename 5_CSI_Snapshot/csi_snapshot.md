@@ -67,6 +67,27 @@ Se busca la aplicación
 
 Se instancia la plantilla
 
+
+Se enseña en el fichero YAML del enlace de GitHub la parte del FlexClone (crear PVC a partir de un Snapshoto de un PV).
+
+```shell
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    name: ${APPLICATION_NAME}
+  spec:
+    accessModes:
+      - ReadWriteMany
+    resources:
+      requests:
+        storage: 100Ti
+    storageClassName: nas
+    dataSource:
+      name: snap-datalake
+      kind: VolumeSnapshot
+      apiGroup: snapshot.storage.k8s.io
+```
+
 <img src="images/create_app_for_data3.png">
 
 Se instancia 3 veces, cambiando los variables, simulando que se crean 3 servicios independientes para 3 Data Sciencies. Tendrán acceso al mismo datalake de forma independiente pero de forma eficiente, sin consumir el triple del espacio.
