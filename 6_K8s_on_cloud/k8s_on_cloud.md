@@ -45,3 +45,4 @@ Accediendo al otro servicio (en modo NodePort) de Kubernetes, vemos una web modi
 
 <img src="images/k8s-on-cloud-9.png">
 
+>  SLIDE 12
